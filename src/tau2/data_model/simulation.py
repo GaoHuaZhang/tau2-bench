@@ -167,6 +167,20 @@ class RunConfig(BaseModel):
             default=False,
         ),
     ]
+    api_base: Annotated[
+        Optional[str],
+        Field(
+            description="Base URL for local OpenAI-compatible API (e.g., http://localhost:8000). Do not include /v1/chat/completions.",
+            default=None,
+        ),
+    ]
+    api_key: Annotated[
+        Optional[str],
+        Field(
+            description="API key for the local OpenAI-compatible endpoint. Optional for local services.",
+            default=None,
+        ),
+    ]
 
     def validate(self) -> None:
         """

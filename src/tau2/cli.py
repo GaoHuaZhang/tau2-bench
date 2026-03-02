@@ -141,6 +141,18 @@ def add_run_args(parser):
         default=False,
         help="Enforce communication protocol rules (e.g., no mixed messages with text and tool calls). Default is False.",
     )
+    parser.add_argument(
+        "--api-base",
+        type=str,
+        default=None,
+        help="Base URL for local OpenAI-compatible API (e.g., http://localhost:8000). Routes to v1/chat/completions.",
+    )
+    parser.add_argument(
+        "--api-key",
+        type=str,
+        default=None,
+        help="API key for the local OpenAI-compatible endpoint. Optional for local services.",
+    )
 
 
 def main():
@@ -172,6 +184,8 @@ def main():
                 seed=args.seed,
                 log_level=args.log_level,
                 enforce_communication_protocol=args.enforce_communication_protocol,
+                api_base=args.api_base,
+                api_key=args.api_key,
             )
         )
     )

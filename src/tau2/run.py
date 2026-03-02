@@ -167,6 +167,8 @@ def run_domain(config: RunConfig) -> Results:
         seed=config.seed,
         log_level=config.log_level,
         enforce_communication_protocol=config.enforce_communication_protocol,
+        api_base=config.api_base,
+        api_key=config.api_key,
     )
     metrics = compute_metrics(simulation_results)
     ConsoleDisplay.display_agent_metrics(metrics)
@@ -193,6 +195,8 @@ def run_tasks(
     seed: Optional[int] = 300,
     log_level: Optional[str] = "INFO",
     enforce_communication_protocol: bool = False,
+    api_base: Optional[str] = None,
+    api_key: Optional[str] = None,
 ) -> Results:
     """
     Runs tasks for a given domain.
@@ -368,6 +372,8 @@ def run_tasks(
                 evaluation_type=evaluation_type,
                 seed=seed,
                 enforce_communication_protocol=enforce_communication_protocol,
+                api_base=api_base,
+                api_key=api_key,
             )
             simulation.trial = trial
             if console_display:
@@ -415,6 +421,8 @@ def run_task(
     evaluation_type: EvaluationType = EvaluationType.ALL,
     seed: Optional[int] = None,
     enforce_communication_protocol: bool = False,
+    api_base: Optional[str] = None,
+    api_key: Optional[str] = None,
 ) -> SimulationRun:
     """
     Runs tasks for a given domain.
@@ -442,6 +450,19 @@ def run_task(
         raise ValueError("Max steps must be greater than 0")
     if max_errors <= 0:
         raise ValueError("Max errors must be greater than 0")
+
+    # Merge api_base and api_key into llm_args when using local OpenAI-compatible API
+    if api_base is not None:
+        llm_args_agent = dict(llm_args_agent or {})
+        llm_args_agent["api_base"] = api_base
+        if api_key is not None:
+            llm_args_agent["api_key"] = api_key
+
+        llm_args_user = dict(llm_args_user or {})
+        llm_args_user["api_base"] = api_base
+        if api_key is not None:
+            llm_args_user["api_key"] = api_key
+
     global registry
     logger.info(
         f"STARTING SIMULATION: Domain: {domain}, Task: {task.id}, Agent: {agent}, User: {user}"

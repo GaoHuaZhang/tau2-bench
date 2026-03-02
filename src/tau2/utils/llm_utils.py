@@ -201,6 +201,12 @@ def generate(
 
     if model.startswith("claude") and not ALLOW_SONNET_THINKING:
         kwargs["thinking"] = {"type": "disabled"}
+
+    # When using local OpenAI-compatible API (api_base), prepend openai/ so LiteLLM
+    # routes to the correct /v1/chat/completions endpoint
+    if kwargs.get("api_base") and not model.startswith("openai/"):
+        model = f"openai/{model}"
+
     litellm_messages = to_litellm_messages(messages)
     tools = [tool.openai_schema for tool in tools] if tools else None
     if tools and tool_choice is None:
